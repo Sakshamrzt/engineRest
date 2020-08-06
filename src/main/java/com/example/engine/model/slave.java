@@ -1,6 +1,7 @@
 package com.example.engine.model;
 import java.util.Date;
 import com.example.engine.model.Engine;
+import com.example.engine.model.slaveType;
 import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;  
 import io.swagger.annotations.ApiModel;  
 import io.swagger.annotations.ApiModelProperty;  
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.engine.model.Engine;
 import java.util.Base64;
 @ApiModel(description="All details about the slave")  
 @NoArgsConstructor
@@ -44,19 +47,14 @@ public class slave {
   @Column(nullable=false)
   private @Getter @Setter Double ram;  
   @ManyToOne(fetch=FetchType.LAZY)
-  @JoinColumn(name="engine_id")
+  @JsonIgnore
+  @JoinColumn(name="engine_id",referencedColumnName="id")
   private @Getter @Setter Engine engine;
-//   public slave(Long id,Integer cores,String name,String status,String userName,String password,String ip,Double ram,Date createdOn,Boolean isActive)    {
-//    this.id=id;
-//    this.cores=cores;
-//    this.name=name;
-//    this.status=status;
-//    this.userName=userName;
-//    this.password=Base64.getEncoder().encodeToString(password.getBytes());
-//    this.ip=ip;
-//    this.ram=ram;
-//    this.createdOn=createdOn;
-//    this.isActive=isActive;
-// }
+  @Column(nullable=false)
+  private @Getter @Setter String category;  
+  @ManyToOne(optional=true)
+  @JoinColumn(name="slaveType_id",referencedColumnName="id")
+  private @Getter @Setter slaveType type;
+
 }
 
