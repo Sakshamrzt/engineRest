@@ -1,9 +1,9 @@
 package com.example.engine.model;
 import com.example.engine.model.slave;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+@Data
 public class slaveDTO
 {
-	private @Getter @Setter slave slave1;
-	private @Getter @Setter String type;
+	private  slave slave1;
+	private  String type;
 }

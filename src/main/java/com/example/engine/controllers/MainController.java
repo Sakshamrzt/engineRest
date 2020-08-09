@@ -10,38 +10,38 @@ import java.util.Optional;
 import com.example.engine.service.EngineService;
 import org.springframework.http.HttpStatus;
 import java.util.List; 
+import java.util.UUID; 
 import io.swagger.annotations.*;  
 @RestController
 @RequestMapping("/api")
 public class MainController {
 @Autowired
-EngineService ser;
+EngineService service;
 @PostMapping("/create")
 @ApiOperation(value = "Create engine and its slaves", notes = "Delete type parameter for slave while giving input. Enter category from choices:e51b38a6-30ec-11e9-babd-fa163e093ca8 or f711eb25-30ec-11e9-babd-fa163e093ca8")
-public ResponseEntity<Object> create(@RequestHeader(value="createdBy") Long createdBy,@RequestBody Engine eng) {	
-	ser.addEngine(eng,createdBy);
+public ResponseEntity<Object> create(@RequestHeader(value="createdBy") UUID createdBy,@RequestBody Engine engine) {
+	service.addEngine(engine,createdBy);
 	return new ResponseEntity<>("Engine is created successfully", HttpStatus.CREATED);	 
 } 
 
 @DeleteMapping("/delete/{id}")
 @ApiOperation(value = "Delete engine and its slaves", notes = "Enter the id of engine you want to delete.")
-public ResponseEntity<Object> delete(@PathVariable String id)
-{
-	Long userId = Long.parseLong(id);
-	ser.deleteEngine(userId);
+public ResponseEntity<Object> delete(@PathVariable UUID id)
+{	
+	service.deleteEngine(id);
 	return new ResponseEntity<>("Deleted", HttpStatus.ACCEPTED);	
 }
 
 @GetMapping("/see")
 @ApiOperation(value = "Display engine and its slaves entered by a user", notes = "Enter the userId whose added entities you wanna see")
-public List<Engine> getAllEngine(@RequestHeader(value="createdBy") Long userId) {  
-	return ser.displayEngine(userId);    
+public List<Engine> getAllEngine(@RequestHeader(value="createdBy") UUID userId) {  
+	return service.displayEngine(userId);    
 }
 @PutMapping("/updateEngine/{id}")
 @ApiOperation(value = "Updating engine and its slaves", notes = "Enter id as header. Enter name, description. In slave array give type=update for updating the slave with the specified data, type=add for adding slave to that engine, and type=remove if you want the slave to be deleted")
-public  ResponseEntity<Object> update(@PathVariable Long id,@RequestParam String name,@RequestParam String desc,@RequestBody List<slaveDTO> sla )
+public  ResponseEntity<Object> update(@PathVariable UUID id,@RequestParam String name,@RequestParam String desc,@RequestBody List<slaveDTO> Slave )
 {
-	ser.updateEngine(id,name,desc,sla);	
+	service.updateEngine(id,name,desc,Slave);	
 	return new ResponseEntity<>("Updated", HttpStatus.ACCEPTED);
 }
 }                                                                                                         

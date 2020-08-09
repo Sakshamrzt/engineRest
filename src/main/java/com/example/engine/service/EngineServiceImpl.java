@@ -12,6 +12,7 @@ import com.example.engine.model.slaveType;
 import com.example.engine.exception.ResourceNotFoundException;
 import java.util.Date;
 import java.util.Base64;
+import java.util.UUID;
 import com.example.engine.model.slaveDTO;
 @Service
 public class EngineServiceImpl implements EngineService{     
@@ -21,57 +22,68 @@ public class EngineServiceImpl implements EngineService{
     slaveTypeRepo slaveTypeRepository;
     
     @Override
-    public void addEngine(Engine eng,Long ida){
-    for (slave sla : eng.getSlaves()) {
+    public void addEngine(Engine engine,UUID ida){
+    for (slave Slave : engine.getSlaves()) {
         try{
-        sla.setPassword(Base64.getEncoder().encodeToString(sla.getPassword().getBytes()));        
-        sla.setEngine(eng); 
-        sla.setType(slaveTypeRepository.findById(sla.getCategory())); 
-        sla.setIsActive(true);
-        sla.setStatus("INITIALISING");
-        sla.setCreatedOn(new Date());       
+        Slave.setPassword(Base64.getEncoder().encodeToString(Slave.getPassword().getBytes()));
+        }
+        catch(Exception e)
+        {
+         throw new  ResourceNotFoundException("Password can't be null.");
+        }  
+        Slave.setEngine(engine); 
+        slaveType parent=slaveTypeRepository.findById(Slave.getType().getId())
+        .orElseThrow(() ->  new  ResourceNotFoundException("Wrong Category uuid."));
+        Slave.setType(parent);
+        Slave.setIsActive(true);
+        Slave.setStatus("INITIALISING");
+        Slave.setCreatedOn(new Date()); 
+        if(Slave.getCores()==null)
+            throw new  ResourceNotFoundException("Cores can't be null.");
+        if(Slave.getIp()==null)
+            throw new  ResourceNotFoundException("Ip can't be null.");
+        if(Slave.getName()==null)
+            throw new  ResourceNotFoundException("Name can't be null."); 
+        if(Slave.getUserName()==null)
+            throw new  ResourceNotFoundException("Username can't be null.");        
+              
     }
-    catch(Exception e)
-    {
-        throw new  ResourceNotFoundException("Category or password can't be null.");
-    }
-    }
-    eng.setIsActive(true);
-    eng.setStatus("INITIALISING");
-    eng.setCreatedOn(new Date());
-    eng.setCreatedBy(ida);
-    engineRepository.save(eng);                        
+    if(engine.getName()==null)
+        throw new  ResourceNotFoundException("Name can't be null.");
+    engine.setIsActive(true);
+    engine.setStatus("INITIALISING");
+    engine.setCreatedOn(new Date());
+    engine.setCreatedBy(ida);
+    engineRepository.save(engine);                        
     }
 
     @Override
-    public void deleteEngine(Long id)
+    public void deleteEngine(UUID id)
     {
-        Long userId=new Long(id);
-    	Engine eng=engineRepository.findById(userId)
+    	Engine engine=engineRepository.findById(id)
     	 .orElseThrow(() -> new ResourceNotFoundException("No engine with the given id has been added "));
-    	 eng.setIsActive(false);
-         for(slave sla:eng.getSlaves())
-            sla.setIsActive(false);
-    	 engineRepository.save(eng);
+    	 engine.setIsActive(false);
+         for(slave Slave:engine.getSlaves())
+            Slave.setIsActive(false);
+    	 engineRepository.save(engine);
     }
     
     @Override
-    public List<Engine> displayEngine(Long a)
+    public List<Engine> displayEngine(UUID a)
     {    	
 		List<Engine> engines = new ArrayList<>();    
-		for(Engine eng: engineRepository.findAll())
+		for(Engine engine: engineRepository.findAll())
             {
-                if(eng.getCreatedBy()==a)
-                    engines.add(eng);
+                if(engine.getCreatedBy().equals(a))
+                    engines.add(engine);
             }
 		return engines;  
     }    
     @Override
-    public void updateEngine(Long id,String name,String desc,List<slaveDTO> sla)
+    public void updateEngine(UUID id,String name,String desc,List<slaveDTO> Slave)
     {
-        
-         Long userId=new Long(id);
-        Engine engDb=engineRepository.findById(userId)
+               
+        Engine engDb=engineRepository.findById(id)
          .orElseThrow(() -> new ResourceNotFoundException("No engine with the given id has been added "));
 
     	if(name!=null)
@@ -81,26 +93,38 @@ public class EngineServiceImpl implements EngineService{
     		engDb.setName(desc);
 
         List<slave> slaves=engDb.getSlaves();
-        for(int i=0;i<sla.size();i++)
+        for(int i=0;i<Slave.size();i++)
         {
             
-            if(sla.get(i).getType().equals("add"))
+            if(Slave.get(i).getType().equals("add"))
                 {                    
-                    sla.get(i).getSlave1().setEngine(engDb);
-                    sla.get(i).getSlave1().setPassword(Base64.getEncoder().encodeToString(sla.get(i).getSlave1().getPassword().getBytes()));                            
-                    sla.get(i).getSlave1().setType(slaveTypeRepository.findById(sla.get(i).getSlave1().getCategory())); 
-                    sla.get(i).getSlave1().setIsActive(true);
-                    sla.get(i).getSlave1().setStatus("INITIALISING");
-                    sla.get(i).getSlave1().setCreatedOn(new Date());
-                    slaves.add(sla.get(i).getSlave1());
+                    Slave.get(i).getSlave1().setEngine(engDb);
+                    if(Slave.get(i).getSlave1().getPassword()==null)
+                        throw new  ResourceNotFoundException("Password can't be null.");
+                    Slave.get(i).getSlave1().setPassword(Base64.getEncoder().encodeToString(Slave.get(i).getSlave1().getPassword().getBytes()));
+                    slaveType parent=slaveTypeRepository.findById(Slave.get(i).getSlave1().getType().getId())
+                    .orElseThrow(() ->  new  ResourceNotFoundException("Wrong Category uuid"));                            
+                    Slave.get(i).getSlave1().setType(parent); 
+                    Slave.get(i).getSlave1().setIsActive(true);
+                    Slave.get(i).getSlave1().setStatus("INITIALISING");
+                    Slave.get(i).getSlave1().setCreatedOn(new Date());
+                    slaves.add(Slave.get(i).getSlave1());
+                    if(Slave.get(i).getSlave1().getCores()==null)
+                        throw new  ResourceNotFoundException("Cores can't be null.");
+                    if(Slave.get(i).getSlave1().getIp()==null)
+                        throw new  ResourceNotFoundException("Ip can't be null.");
+                    if(Slave.get(i).getSlave1().getName()==null)
+                        throw new  ResourceNotFoundException("Name can't be null.");
+                    if(Slave.get(i).getSlave1().getUserName()==null)
+                        throw new  ResourceNotFoundException("Username can't be null.");        
                 }
-            else if(sla.get(i).getType().equals("remove"))
+            else if(Slave.get(i).getType().equals("remove"))
             {   
                 int del=-1;
                 for(int j=0;j<slaves.size();j++)
                 {
                     
-                    if(slaves.get(j).getId()==sla.get(i).getSlave1().getId())
+                    if(slaves.get(j).getId().equals(Slave.get(i).getSlave1().getId()))
                         {
                           
                             del=j;                            
@@ -110,25 +134,25 @@ public class EngineServiceImpl implements EngineService{
                     slaves.remove(del);                            
 
             }
-            else if(sla.get(i).getType().equals("update"))
-            {
-                System.out.println("Updating");
+            else if(Slave.get(i).getType().equals("update"))
+            {                
                 for(int j=0;j<slaves.size();j++)
                 {
-                    if(slaves.get(j).getId()==sla.get(i).getSlave1().getId())
-                        {
-                            if(sla.get(i).getSlave1().getName()!=null)
-                                slaves.get(j).setName(sla.get(i).getSlave1().getName());
-                            if(sla.get(i).getSlave1().getCores()!=null)
-                                slaves.get(j).setCores(sla.get(i).getSlave1().getCores());
-                            if(sla.get(i).getSlave1().getRam()!=null)
-                                slaves.get(j).setRam(sla.get(i).getSlave1().getRam());
-                            if(sla.get(i).getSlave1().getCategory()!=null)
+                    if(slaves.get(j).getId().equals(Slave.get(i).getSlave1().getId()))
+                        {                            
+                            if(Slave.get(i).getSlave1().getName()!=null)
+                                slaves.get(j).setName(Slave.get(i).getSlave1().getName());
+                            if(Slave.get(i).getSlave1().getCores()!=null)
+                                slaves.get(j).setCores(Slave.get(i).getSlave1().getCores());
+                            if(Slave.get(i).getSlave1().getRam()!=null)
+                                slaves.get(j).setRam(Slave.get(i).getSlave1().getRam());
+                            if(Slave.get(i).getSlave1().getType().getId()!=null)
                             {
-                                if(slaves.get(j).getCategory()!=sla.get(i).getSlave1().getCategory())
-                                {
-                              slaves.get(j).setCategory(sla.get(i).getSlave1().getCategory());
-                              slaves.get(j).setType(slaveTypeRepository.findById(slaves.get(j).getCategory()));
+                                if(!slaves.get(j).getType().getId().equals(Slave.get(i).getSlave1().getType().getId()))
+                                {                              
+                              slaveType parent=slaveTypeRepository.findById(slaves.get(j).getType().getId())
+                              .orElseThrow(() ->  new  ResourceNotFoundException("Wrong Category uuid."));     
+                              slaves.get(j).setType(parent);
                             }
                         }
                         break;

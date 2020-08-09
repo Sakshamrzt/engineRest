@@ -8,8 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import javax.persistence.Lob;
 import com.example.engine.model.slave;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,27 +20,39 @@ import javax.persistence.CascadeType;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.FetchType; 
+import org.hibernate.id.UUIDGenerator;
+import java.util.UUID;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 @ApiModel(description="All details about the engine")
 @NoArgsConstructor
 @Entity
+@Data
 public class Engine {
   @ApiModelProperty(value="Unique id for engine")
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
-  @Column(nullable=false)
-  private @Getter @Setter Long id;
+  @GeneratedValue(generator="UUID")
+  @GenericGenerator(name="UUID", strategy="org.hibernate.id.UUIDGenerator")
+  @Column(nullable=false,updatable=false)
+  @Type(type="uuid-char")
+  // @Pattern(regexp = "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$", message = "TokenFormatError")
+  private   UUID id;  
   @ApiModelProperty(value="Unique id for creator of engine")
-  private @Getter @Setter Long createdBy;
+  @Type(type="uuid-char")
+  @Column(nullable=false)
+  private   UUID createdBy;
   @Column(nullable=false)
   @ApiModelProperty(value="Unique id for name of engine")
-  private @Getter @Setter String name;
+  private   String name;
   @Column(nullable=false)
-  private @Getter @Setter String status;
-  private @Getter @Setter String description;
+  private   String status;
+  @Lob
+  @Column
+  private   String description;
   @Column(nullable=false)
-  private @Getter @Setter Date createdOn;  
+  private   Date createdOn;  
   @Column(nullable=false)
-  private @Getter @Setter Boolean isActive;  
-  @OneToMany(mappedBy="engine",cascade = CascadeType.ALL,fetch= FetchType.EAGER,orphanRemoval = true )
-  private @Getter @Setter  List<slave> slaves= new ArrayList<>();
+  private   Boolean isActive;  
+  @OneToMany(mappedBy="engine",cascade = CascadeType.ALL,fetch= FetchType.LAZY,orphanRemoval = true )
+  private    List<slave> slaves= new ArrayList<>();
 }

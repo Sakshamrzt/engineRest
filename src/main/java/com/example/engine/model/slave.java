@@ -8,8 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne; 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import javax.persistence.FetchType; 
@@ -19,42 +18,47 @@ import io.swagger.annotations.ApiModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.example.engine.model.Engine;
 import java.util.Base64;
+import org.hibernate.id.UUIDGenerator;
+import java.util.UUID;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 @ApiModel(description="All details about the slave")  
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Data
 public class slave {
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
+  @GeneratedValue(generator="UUID")
+  @GenericGenerator(name="UUID", strategy="org.hibernate.id.UUIDGenerator")
+  @Column(nullable=false,updatable=false)
+  @Type(type="uuid-char")
+  private   UUID id;
   @Column(nullable=false)
-  private @Getter @Setter Long id;
+  private   String name;
   @Column(nullable=false)
-  private @Getter @Setter String name;
+  private   Date createdOn;
   @Column(nullable=false)
-  private @Getter @Setter Date createdOn;
+  private   Boolean isActive;
   @Column(nullable=false)
-  private @Getter @Setter Boolean isActive;
+  private   String status;
   @Column(nullable=false)
-  private @Getter @Setter String status;
+  private   String ip;
   @Column(nullable=false)
-  private @Getter @Setter String ip;
+  private   String userName;
   @Column(nullable=false)
-  private @Getter @Setter String userName;
+  private   String password;
   @Column(nullable=false)
-  private @Getter @Setter String password;
+  private   Integer cores;
   @Column(nullable=false)
-  private @Getter @Setter Integer cores;
-  @Column(nullable=false)
-  private @Getter @Setter Double ram;  
+  private   Double ram;  
   @ManyToOne(fetch=FetchType.LAZY)
   @JsonIgnore
   @JoinColumn(name="engine_id",referencedColumnName="id")
-  private @Getter @Setter Engine engine;
-  @Column(nullable=false)
-  private @Getter @Setter String category;  
+  private   Engine engine;
   @ManyToOne(optional=true)
   @JoinColumn(name="slaveType_id",referencedColumnName="id")
-  private @Getter @Setter slaveType type;
+  private   slaveType type;
 
 }
 

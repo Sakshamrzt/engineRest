@@ -11,4 +11,8 @@ public class ProductExceptionController {
    public ResponseEntity<Object> exception(ResourceNotFoundException ex) {   	
       return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
    }
+   @ExceptionHandler(value = IllegalArgumentException.class)
+   public ResponseEntity<Object> exception() {   	
+      return new ResponseEntity<>("Wrong uuid format", HttpStatus.NOT_FOUND);
+   }
 }
