@@ -9,6 +9,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import static springfox.documentation.builders.PathSelectors.regex;
 import springfox.documentation.builders.ParameterBuilder;
+import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
 import static com.google.common.base.Predicates.or;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public class swaggerConfig {
 	public Docket postsApi() {
 	
 		return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
-				.apiInfo(apiInfo()).select().paths(postPaths()).build().pathMapping("").globalOperationParameters( Arrays.asList(new ParameterBuilder()
+				.apiInfo(apiInfo()).select().apis(RequestHandlerSelectors.basePackage("com.example.engine")).paths(postPaths()).build().pathMapping("").globalOperationParameters( Arrays.asList(new ParameterBuilder()
             .name("header")
             .description("Description of header")
             .modelRef(new ModelRef("string"))

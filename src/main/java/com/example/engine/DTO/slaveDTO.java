@@ -1,4 +1,4 @@
-package com.example.engine.model;
+package com.example.engine.DTO;
 import com.example.engine.model.slave;
 import lombok.Data;
 @Data

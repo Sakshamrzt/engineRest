@@ -16,6 +16,8 @@ import javax.persistence.JoinColumn;
 import io.swagger.annotations.ApiModel;  
 import io.swagger.annotations.ApiModelProperty;  
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.example.engine.Deserialize.CustomerDateAndTimeDeserialize;
 import com.example.engine.model.Engine;
 import java.util.Base64;
 import org.hibernate.id.UUIDGenerator;
@@ -37,6 +39,7 @@ public class slave {
   @Column(nullable=false)
   private   String name;
   @Column(nullable=false)
+  //@JsonDeserialize(using=CustomerDateAndTimeDeserialize.class)
   private   Date createdOn;
   @Column(nullable=false)
   private   Boolean isActive;
